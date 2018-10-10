@@ -4,15 +4,19 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.miteshkarmur.SpringBootCustomerCRUD.entity.Customer;
+import com.miteshkarmur.SpringBootCustomerCRUD.exceptions.CustomerNotFoundException;
 import com.miteshkarmur.SpringBootCustomerCRUD.service.CustomerService;
 
 @RestController
@@ -37,27 +41,39 @@ public class CustomerRestController {
 	
 	@GetMapping("/customers/{customerId}")
 	public Customer getCustomerbyId(@PathVariable Integer customerId) {
-		return customerService.getCustomerById(customerId);
+		Customer cust=customerService.getCustomerById(customerId);
+		if(cust==null) {
+			throw new CustomerNotFoundException("Customer is not present with Id - "+customerId);
+		}
+		return cust;
 	}
 	
 	@PostMapping("/customers")
-	public String saveCustomer( Customer customer) {
+	public Customer saveCustomer(@RequestBody Customer customer) {
+		//customer.setId(0);
 		customerService.saveOrUpdateCustomer(customer);
-		return "redirect:/listCustomers";
+		return customer;
 	}
 	
-	@GetMapping("/updateCustomerForm")
-	public String updateCustomerform(@RequestParam("custId") Integer custId,Model model) {
-		Customer customer=customerService.getCustomerById(custId);
-		model.addAttribute("customer",customer);
-		return "customer-form";
+	@PutMapping("/customers")
+	public Customer updateCustomer(@RequestBody Customer customer) {
+		Customer cust=customerService.getCustomerById(customer.getId());
+		if(cust==null) {
+			throw new CustomerNotFoundException("Customer is not present with Id - "+customer.getId());
+		}
+		customerService.saveOrUpdateCustomer(customer);
+		return customer;
+		
 	}
 	
 	
-	@GetMapping("/deleteCustomer")
-	public String deleteCustomer(@RequestParam("custId") Integer custId) {
+	@DeleteMapping("/customers/{custId}")
+	public String deleteCustomer(@PathVariable Integer custId) {
 		Customer customer=customerService.getCustomerById(custId);
+		if(customer==null) {
+			throw new CustomerNotFoundException("Customer is not present with Id - "+custId);
+		}
 		customerService.deleteCustomer(customer);
-		return "redirect:/listCustomers";
+		return "Deleted customer with Id - "+custId;
 	}
 }
