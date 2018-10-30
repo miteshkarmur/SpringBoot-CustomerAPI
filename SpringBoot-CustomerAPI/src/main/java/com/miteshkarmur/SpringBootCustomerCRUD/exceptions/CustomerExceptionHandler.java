@@ -10,13 +10,14 @@ import com.miteshkarmur.SpringBootCustomerCRUD.entity.CustomerErrorResponse;
 @ControllerAdvice
 public class CustomerExceptionHandler {
 
-	@ExceptionHandler
+	/*@ExceptionHandler
 	public ResponseEntity<CustomerErrorResponse> handleException(CustomerNotFoundException ex){
 		CustomerErrorResponse cError=new CustomerErrorResponse(HttpStatus.NOT_FOUND.value(), 
 																ex.getMessage(), 
 																System.currentTimeMillis());
 		return new ResponseEntity<>(cError, HttpStatus.NOT_FOUND);
-	}
+	}*/
+	
 	
 	/*@ExceptionHandler
 	public ResponseEntity<CustomerErrorResponse> handleGenericException(Exception ex){
